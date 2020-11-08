@@ -9,7 +9,7 @@ require("love.timer")
 local reg = {}
 
 local delay_between_checks = 3 --Time in seconds between each check
-local source_path = "/OS/DiskOS/"
+local source_path = "/OS/RamiOS/"
 local target_path = "/Drives/C/"
 
 local channel = ... --A channel for stopping the thread when needed

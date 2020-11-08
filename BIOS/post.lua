@@ -190,7 +190,7 @@ wait(0.2)
 fs.drive("C") --Switch to the C drive.
 
 local function InstallOS(update)
-  love.filesystem.load("BIOS/installer.lua")(Handled,"DiskOS",update,"C")
+  love.filesystem.load("BIOS/installer.lua")(Handled,"RamiOS",update,"C")
 end
 
 if not fs.exists("/boot.lua") then _LIKO_Old = false; InstallOS()

@@ -13,9 +13,9 @@ I don't think anyone would want to edit anything in this file, but only change t
 
 --LIKO-12 Version
 _LVer = {
-	major = 1,
-	minor = 1,
-	patch = 1,
+	major = 2,
+	minor = 0,
+	patch = 0,
 	tag = "Development" --Release, Pre-Relase, Development
 }
 _LVERSION = string.format("V%d.%d.%d-%s",_LVer.major,_LVer.minor,_LVer.patch,_LVer.tag)
@@ -28,7 +28,7 @@ if love.filesystem.getInfo and love.filesystem.getInfo("build.json", "file") the
 end
 
 function love.conf(t)
-    t.identity = build.Appdata or "LIKO-12"-- The name of the save directory (string)
+    t.identity = build.Appdata or "LIKO-12-DEV" -- The name of the save directory (string)
     t.version = "11.3"                  -- The LÖVE version this game was made for (string)
     t.console = false                   -- Attach a console (boolean, Windows only)
     t.accelerometerjoystick = false     -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)

@@ -66,7 +66,7 @@ if update and false then --Temporary disable this thing.
   display("Indexing Files")
   
   local function index(path, list)
-    path = path or "/OS/DiskOS/"
+    path = path or "/OS/RamiOS/"
     list = list or {}
 
     local items = love.filesystem.getDirectoryItems(path)
@@ -120,7 +120,7 @@ else ---INSTALL--------------------------------------------
   local removeBoot = false
   
   local function index(path, list, sub)
-    path = path or "/OS/DiskOS/"
+    path = path or "/OS/RamiOS/"
     list = list or {}
 
     local items = love.filesystem.getDirectoryItems(path)
@@ -171,8 +171,8 @@ else ---INSTALL--------------------------------------------
     drawProgress(1)
   end
   
-  if osName ~= "DiskOS" then
-    fs.write(osDrive..":/.noupdate","This file ensures that the operating system is not overwritten by DiskOS when LIKO-12's version is changed.")
+  if osName ~= "RamiOS" then
+    fs.write(osDrive..":/.noupdate","This file ensures that the operating system is not overwritten by RamiOS when LIKO-12's version is changed.")
   end
 end
 
