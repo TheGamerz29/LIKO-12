@@ -25,8 +25,12 @@ end
 function coreg.resumeCoroutine(...)
   local lastargs = {...}
   while true do
-    if not likoCoroutine or coroutine.status(likoCoroutine) == "dead" then
-      return error(likoCoroutine and "The coroutine is dead" or "No coroutine to execute !")
+    if not likoCoroutine then return error("No coroutine to execute !") end
+
+    if coroutine.status(likoCoroutine) == "dead" then
+      print("The LIKO-12 VM has finished, quitting.")
+      love.event.quit()
+      return
     end
     
     local args = {coroutine.resume(likoCoroutine,unpack(lastargs))}
