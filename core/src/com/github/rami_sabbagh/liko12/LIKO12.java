@@ -5,10 +5,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,83 +15,94 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LIKO12 extends ApplicationAdapter {
-	OrthographicCamera camera;
-	Viewport viewport;
-	FrameBuffer fbo;
-	ShapeRenderer shapeRenderer;
-	SpriteBatch batch;
+    OrthographicCamera camera;
+    Viewport viewport;
+    FrameBuffer fbo;
+    ShapeRenderer shapeRenderer;
+    SpriteBatch batch;
+    Vector2 inputVec;
 
-	private Vector2 inputVec = new Vector2();
-	
-	@Override
-	public void create () {
-		fbo = new FrameBuffer(Format.RGBA8888, 192, 128, false);
-		fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
+    @Override
+    public void create() {
+        fbo = new FrameBuffer(Format.RGBA8888, 192, 128, false);
+        fbo.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
 
-		camera = new OrthographicCamera();
-		camera.setToOrtho(true, 192, 128);
+        camera = new OrthographicCamera();
+        camera.setToOrtho(true, 192, 128);
 
-		viewport = new FitViewport(192, 128);
+        viewport = new FitViewport(192, 128);
 
-		shapeRenderer = new ShapeRenderer();
-		batch = new SpriteBatch();
-	}
+        shapeRenderer = new ShapeRenderer();
+        batch = new SpriteBatch();
 
-	void renderBuffer() {
-		fbo.begin();
+        inputVec = new Vector2();
 
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        fbo.begin();
 
-		shapeRenderer.setProjectionMatrix(camera.combined);
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		shapeRenderer.setColor(1, 1, 1, 1);
-		shapeRenderer.rect(5.5f, 5.5f, 3f, 3f);
-		shapeRenderer.rect(50.5f,50.5f, 20f, 20f);
-		shapeRenderer.circle(192 >> 1, 128 >> 1, 5);
+        Gdx.gl.glClearColor(1, 0.7f, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		shapeRenderer.point(0.5f, 0.5f, 0);
-		shapeRenderer.point(0.5f, 127.5f, 0);
-		shapeRenderer.point(191.5f, 0.5f, 0);
-		shapeRenderer.point(191.5f, 127.5f, 0);
+        fbo.end();
+    }
 
-		for (int pointer=0; pointer<Gdx.input.getMaxPointers(); pointer++) {
-			if (Gdx.input.isTouched(pointer) || Gdx.app.getType() == Application.ApplicationType.Desktop) {
-				inputVec.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
-				viewport.unproject(inputVec);
-				inputVec.y = 127-inputVec.y;
+    void renderBuffer() {
+        fbo.begin();
 
-				//shapeRenderer.x(inputVec.x, inputVec.y, 5);
-				shapeRenderer.point(inputVec.x+0.5f, inputVec.y+0.5f, 0);
-			}
-		}
 
-		shapeRenderer.end();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(1, 1, 1, 1);
+        shapeRenderer.rect(5.5f, 5.5f, 3f, 3f);
+//        shapeRenderer.rect(50.5f, 50.5f, 20f, 20f);
+//        shapeRenderer.circle(192 >> 1, 128 >> 1, 5);
 
-		fbo.end();
-	}
+        shapeRenderer.point(0.5f, 0.5f, 0);
+        shapeRenderer.point(0.5f, 127.5f, 0);
+        shapeRenderer.point(191.5f, 0.5f, 0);
+        shapeRenderer.point(191.5f, 127.5f, 0);
 
-	@Override
-	public void render () {
-		renderBuffer();
-		Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-		batch.setProjectionMatrix(viewport.getCamera().combined);
-		batch.begin();
-		batch.draw(fbo.getColorBufferTexture(), 0, 0, 192, 128, 0, 0, 1, 1);
-		batch.end();
-	}
-	
-	@Override
-	public void dispose () {
-		fbo.dispose();
-		shapeRenderer.dispose();
-		batch.dispose();
-	}
+        for (int pointer = 0; pointer < Gdx.input.getMaxPointers(); pointer++) {
+            if (Gdx.input.isTouched(pointer)){ // || Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                inputVec.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
+                viewport.unproject(inputVec);
+                inputVec.y = 127 - inputVec.y;
 
-	@Override
-	public void resize(int width, int height) {
-		viewport.update(width, height, true);
-	}
+                inputVec.x = (float) Math.floor(inputVec.x);
+                inputVec.y = (float) Math.floor(inputVec.y);
+
+                shapeRenderer.circle(inputVec.x, inputVec.y, 3);
+            }
+        }
+
+        shapeRenderer.end();
+
+        fbo.end();
+    }
+
+    @Override
+    public void render() {
+        renderBuffer();
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.setProjectionMatrix(viewport.getCamera().combined);
+        batch.begin();
+        batch.draw(fbo.getColorBufferTexture(), 0, 0, 192, 128, 0, 0, 1, 1);
+        batch.end();
+    }
+
+    @Override
+    public void dispose() {
+        fbo.dispose();
+        shapeRenderer.dispose();
+        batch.dispose();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
 }
