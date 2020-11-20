@@ -1,4 +1,4 @@
-package com.github.rami_sabbagh.liko12.graphics;
+package com.github.rami_sabbagh.liko12.graphics.interfaces;
 
 /**
  * Allows to draw images and edit them.

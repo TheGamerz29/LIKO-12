@@ -1,4 +1,4 @@
-package com.github.rami_sabbagh.liko12.graphics;
+package com.github.rami_sabbagh.liko12.graphics.interfaces;
 
 /**
  * Allows to get information about the screen, and take screenshots.
