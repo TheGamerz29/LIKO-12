@@ -19,6 +19,8 @@ public interface GraphicsPainter {
      */
     void setColor(int color);
 
+    //TODO: Add line width and line join style.
+
     /**
      * Clears the screen and fills it with a specific color.
      *
@@ -33,7 +35,7 @@ public interface GraphicsPainter {
      * @param y     The Y coordinates of the point.
      * @param color The color of the point. Defaults to the active color.
      */
-    void point(int x, int y, Integer color);
+    void point(float x, float y, Integer color);
 
     /**
      * Draws a line into the screen.
@@ -44,7 +46,7 @@ public interface GraphicsPainter {
      * @param y2    The Y coordinates of the line's end.
      * @param color The color of the line. Defaults to the active color.
      */
-    void line(int x1, int y1, int x2, int y2, Integer color);
+    void line(float x1, float y1, float x2, float y2, Integer color);
 
     /**
      * Draws a triangle into the screen.
@@ -58,7 +60,7 @@ public interface GraphicsPainter {
      * @param filled Whether to fill the triangle or only outline it. Defaults to false (outlined).
      * @param color  The color of the triangle. Defaults to the active color.
      */
-    void triangle(int x1, int y1, int x2, int y2, int x3, int y3, Boolean filled, Integer color);
+    void triangle(float x1, float y1, float x2, float y2, float x3, float y3, Boolean filled, Integer color);
 
     /**
      * Draws a rectangle into the screen.
@@ -70,7 +72,7 @@ public interface GraphicsPainter {
      * @param filled Whether to fill the rectangle or only outline it. Defaults to false (outlined).
      * @param color  The color of the rectangle. Defaults to the active color.
      */
-    void rectangle(int x, int y, int width, int height, Boolean filled, Integer color);
+    void rectangle(float x, float y, float width, float height, Boolean filled, Integer color);
 
     /**
      * Draws a filled polygon into the screen.
@@ -84,8 +86,7 @@ public interface GraphicsPainter {
      * @param verticesAndColor Any other vertices of the polygon
      *                         and the color of the polygon (Defaults to the active color).
      */
-    void polygon(int x1, int y1, int x2, int y2, int x3, int y3, Integer... verticesAndColor);
-
+    void polygon(float x1, float y1, float x2, float y2, float x3, float y3, Integer... verticesAndColor);
 
     /**
      * Draws a circle on the screen.
@@ -95,9 +96,8 @@ public interface GraphicsPainter {
      * @param radius   The radius of the circle.
      * @param filled   Whether to fill the circle or only outline it. Defaults to false (outlined).
      * @param color    The color of the circle. Defaults to the active color.
-     * @param segments The number of segments used for drawing the circle.
      */
-    void circle(int x, int y, int radius, Boolean filled, Integer color, Integer segments);
+    void circle(float x, float y, float radius, Boolean filled, Integer color);
 
     /**
      * Draws an ellipse on the screen.
@@ -108,7 +108,6 @@ public interface GraphicsPainter {
      * @param radiusY  The radius of the ellipse along the Y-axis (half the ellipse's height).
      * @param filled   Whether to fill the ellipse or only outline it. Defaults to false (outlined).
      * @param color    The color of the ellipse. Defaults to the active color.
-     * @param segments The number of segments used for drawing the ellipse.
      */
-    void ellipse(int x, int y, int radiusX, int radiusY, Boolean filled, Integer color, Integer segments);
+    void ellipse(float x, float y, float radiusX, float radiusY, Boolean filled, Integer color);
 }

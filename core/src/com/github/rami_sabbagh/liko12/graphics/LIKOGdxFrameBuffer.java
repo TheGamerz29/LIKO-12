@@ -1,5 +1,6 @@
 package com.github.rami_sabbagh.liko12.graphics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -16,14 +17,34 @@ import static com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest;
 
 public class LIKOGdxFrameBuffer implements Disposable {
 
-    private final FrameBuffer frameBuffer;
-    private final OrthographicCamera camera;
+    /**
+     * The OpenGL framebuffer of the LIKO-12 screen.
+     */
+    public final FrameBuffer frameBuffer;
+    /**
+     * The orthographic camera applied on the LIKO-12 drawing operations.
+     */
+    public final OrthographicCamera camera;
 
-    private final Texture drawerTexture;
-    private final PolygonSpriteBatch batch;
+    /**
+     * A 1x1 #FFFFFFFF texture.
+     */
+    public final Texture drawerTexture;
+    /**
+     * A Polygon sprite batch for the shapes and images drawing operations.
+     */
+    public final PolygonSpriteBatch batch;
 
-    private final ShapeDrawer drawer;
+    /**
+     * The shapes drawer for LIKO-12 drawing operations.
+     */
+    public final ShapeDrawer drawer;
 
+    /**
+     * Creates a new framebuffer of the desired dimensions.
+     * @param width The width of the framebuffer in pixels.
+     * @param height The height of the framebuffer in pixels.
+     */
     public LIKOGdxFrameBuffer(int width, int height) {
         frameBuffer = new FrameBuffer(RGB888, width, height, false);
         frameBuffer.getColorBufferTexture().setFilter(Nearest, Nearest); //Set the scaling filter.
@@ -37,6 +58,23 @@ public class LIKOGdxFrameBuffer implements Disposable {
         batch.setProjectionMatrix(camera.combined);
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
+        drawer.setDefaultSnap(true);
+    }
+
+    /**
+     * Binds the LIKO-12's framebuffer and allows drawing operations to be made afterwards.
+     */
+    public void begin() {
+        frameBuffer.begin();
+        batch.begin();
+    }
+
+    /**
+     * Unbinds the LIKO-12's framebuffer and drawing operations won't be allowed afterwards.
+     */
+    public void end() {
+        batch.end();
+        frameBuffer.end();
     }
 
     /**
