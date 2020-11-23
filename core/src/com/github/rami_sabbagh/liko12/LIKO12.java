@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.github.rami_sabbagh.liko12.graphics.LIKOGdxFrameBuffer;
-import com.github.rami_sabbagh.liko12.graphics.LIKOGdxGraphics;
+import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxFrameBuffer;
+import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxGraphics;
 
 public class LIKO12 extends ApplicationAdapter {
     Viewport viewport;

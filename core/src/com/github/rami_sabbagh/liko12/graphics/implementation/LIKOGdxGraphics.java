@@ -1,4 +1,4 @@
-package com.github.rami_sabbagh.liko12.graphics;
+package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
+import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxFrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;

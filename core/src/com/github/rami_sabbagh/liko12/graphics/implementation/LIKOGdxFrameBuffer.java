@@ -1,4 +1,4 @@
-package com.github.rami_sabbagh.liko12.graphics;
+package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
