@@ -31,7 +31,7 @@ public interface Image {
      * @param srcWidth  The width of the region to draw from the image in pixels. Defaults to the image's width.
      * @param srcHeight The height of the region to draw from the image in pixels. Defaults to the image's height.
      */
-    void draw(int x, int y, Float rotation, Float scaleX, Float scaleY, Integer srcX, Integer srcY, Integer srcWidth, Integer srcHeight);
+    void draw(float x, float y, Float rotation, Float scaleX, Float scaleY, Integer srcX, Integer srcY, Integer srcWidth, Integer srcHeight);
 
     /**
      * Updates the image's content from the ImageData used to create the image.

@@ -4,34 +4,45 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxFrameBuffer;
-import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxGraphics;
+import com.github.rami_sabbagh.liko12.graphics.implementation.GdxFrameBuffer;
+import com.github.rami_sabbagh.liko12.graphics.implementation.GdxGraphics;
 
 public class LIKO12 extends ApplicationAdapter {
     Viewport viewport;
 
-    LIKOGdxFrameBuffer likoGdxFrameBuffer;
-    LIKOGdxGraphics graphics;
+    GdxFrameBuffer gdxFrameBuffer;
+    GdxGraphics graphics;
     SpriteBatch batch;
+    ShaderProgram displayShader;
 
     Vector2 inputVec;
 
     @Override
     public void create() {
         viewport = new FitViewport(192, 128);
-        likoGdxFrameBuffer = new LIKOGdxFrameBuffer(192, 128);
-        graphics = new LIKOGdxGraphics(likoGdxFrameBuffer);
+        gdxFrameBuffer = new GdxFrameBuffer(192, 128);
+        graphics = new GdxGraphics(gdxFrameBuffer);
 
         batch = new SpriteBatch();
+        displayShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("displayShader.glsl"));
+        if (!displayShader.isCompiled())
+            throw new IllegalArgumentException("Error compiling shader: " + displayShader.getLog());
+        batch.setShader(displayShader);
+
+        displayShader.bind();
+        for (int colorId = 0; colorId < 16; colorId++) {
+            displayShader.setUniformf("u_palette[" + colorId + "]", graphics.defaultColorsPalette[colorId]);
+        }
 
         inputVec = new Vector2();
     }
 
     void renderBuffer() {
-        likoGdxFrameBuffer.begin();
+        gdxFrameBuffer.begin();
 
         graphics.clear(0);
         graphics.setColor(7);
@@ -56,7 +67,7 @@ public class LIKO12 extends ApplicationAdapter {
         //graphics.point(inputVec.x, inputVec.y, 15);
         graphics.circle(inputVec.x, inputVec.y, 8, true, 15);
 
-        likoGdxFrameBuffer.end();
+        gdxFrameBuffer.end();
     }
 
     @Override
@@ -69,13 +80,13 @@ public class LIKO12 extends ApplicationAdapter {
 
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        batch.draw(likoGdxFrameBuffer.frameBuffer.getColorBufferTexture(), 0, 0, 192, 128, 0, 0, 1, 1);
+        batch.draw(gdxFrameBuffer.frameBuffer.getColorBufferTexture(), 0, 0, 192, 128, 0, 0, 1, 1);
         batch.end();
     }
 
     @Override
     public void dispose() {
-        likoGdxFrameBuffer.dispose();
+        gdxFrameBuffer.dispose();
         batch.dispose();
     }
 

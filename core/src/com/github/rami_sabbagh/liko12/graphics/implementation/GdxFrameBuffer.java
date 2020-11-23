@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Disposable;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -15,7 +16,7 @@ import static com.badlogic.gdx.graphics.Pixmap.Format.RGB888;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest;
 
-public class LIKOGdxFrameBuffer implements Disposable {
+public class GdxFrameBuffer implements Disposable {
 
     /**
      * The OpenGL framebuffer of the LIKO-12 screen.
@@ -34,6 +35,10 @@ public class LIKOGdxFrameBuffer implements Disposable {
      * A Polygon sprite batch for the shapes and images drawing operations.
      */
     public final PolygonSpriteBatch batch;
+    /**
+     * The ShaderProgram of LIKO-12.
+     */
+    public final ShaderProgram shader;
 
     /**
      * The shapes drawer for LIKO-12 drawing operations.
@@ -42,10 +47,11 @@ public class LIKOGdxFrameBuffer implements Disposable {
 
     /**
      * Creates a new framebuffer of the desired dimensions.
-     * @param width The width of the framebuffer in pixels.
+     *
+     * @param width  The width of the framebuffer in pixels.
      * @param height The height of the framebuffer in pixels.
      */
-    public LIKOGdxFrameBuffer(int width, int height) {
+    public GdxFrameBuffer(int width, int height) {
         frameBuffer = new FrameBuffer(RGB888, width, height, false);
         frameBuffer.getColorBufferTexture().setFilter(Nearest, Nearest); //Set the scaling filter.
 
@@ -56,6 +62,10 @@ public class LIKOGdxFrameBuffer implements Disposable {
 
         batch = new PolygonSpriteBatch();
         batch.setProjectionMatrix(camera.combined);
+
+        shader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("fragmentShader.glsl"));
+        if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+        batch.setShader(shader);
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
         drawer.setDefaultSnap(true);
@@ -100,5 +110,6 @@ public class LIKOGdxFrameBuffer implements Disposable {
         frameBuffer.dispose();
         drawerTexture.dispose();
         batch.dispose();
+        shader.dispose();
     }
 }

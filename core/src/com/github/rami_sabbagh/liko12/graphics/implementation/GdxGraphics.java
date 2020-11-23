@@ -7,30 +7,31 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
-import com.github.rami_sabbagh.liko12.graphics.implementation.LIKOGdxFrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class LIKOGdxGraphics implements Graphics {
+public class GdxGraphics implements Graphics {
 
     private final static int MAX_COLORS = 16;
 
+    private final GdxFrameBuffer gdxFrameBuffer;
     private final FrameBuffer frameBuffer;
     private final ShapeDrawer drawer;
-    private final Color[] colorPalette;
-    private final Color[] defaultColorsPalette;
+    public final Color[] colorPalette;
+    public final Color[] defaultColorsPalette;
     private int activeColor = 0;
 
-    public LIKOGdxGraphics(LIKOGdxFrameBuffer likoGdxFrameBuffer) {
-        frameBuffer = likoGdxFrameBuffer.frameBuffer;
-        drawer = likoGdxFrameBuffer.drawer;
+    public GdxGraphics(GdxFrameBuffer gdxFrameBuffer) {
+        this.gdxFrameBuffer = gdxFrameBuffer;
+        frameBuffer = this.gdxFrameBuffer.frameBuffer;
+        drawer = this.gdxFrameBuffer.drawer;
 
         defaultColorsPalette = loadColorsPaletteFromImage(Gdx.files.internal("palette.png"));
         colorPalette = new Color[defaultColorsPalette.length];
         for (int colorId = 0; colorId < colorPalette.length; colorId++)
-            colorPalette[colorId] = new Color(defaultColorsPalette[colorId]);
+            colorPalette[colorId] = new Color(colorId / 15.0f, 0, 0, 1.0f);//new Color(defaultColorsPalette[colorId]);
     }
 
     /**
@@ -135,7 +136,7 @@ public class LIKOGdxGraphics implements Graphics {
 
     @Override
     public ImageData newImageData(int width, int height) {
-        return null; //TODO: Implement me.
+        return new GdxImageData(this.gdxFrameBuffer, width, height);
     }
 
     @Override
@@ -158,7 +159,7 @@ public class LIKOGdxGraphics implements Graphics {
 
     @Override
     public void point(float x, float y, Integer color) {
-        drawer.rectangle(x+0.5f, y+0.5f, 0, 0, getGdxColor(color));
+        drawer.rectangle(x + 0.5f, y + 0.5f, 0, 0, getGdxColor(color));
     }
 
     @Override
@@ -168,7 +169,12 @@ public class LIKOGdxGraphics implements Graphics {
 
     @Override
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3, Boolean filled, Integer color) {
-        x1 += 0.5f; y1 += 0.5f; x2 += 0.5f; y2 += 0.5f; x3 += 0.5f; y3 += 0.5f;
+        x1 += 0.5f;
+        y1 += 0.5f;
+        x2 += 0.5f;
+        y2 += 0.5f;
+        x3 += 0.5f;
+        y3 += 0.5f;
         if (filled) {
             drawer.filledTriangle(x1, y1, x2, y2, x3, y3, getGdxColor(color));
         } else {
@@ -178,11 +184,12 @@ public class LIKOGdxGraphics implements Graphics {
 
     @Override
     public void rectangle(float x, float y, float width, float height, Boolean filled, Integer color) {
-        x += 0.5f; y += 0.5f;
+        x += 0.5f;
+        y += 0.5f;
         if (filled) {
-            drawer.filledRectangle(x, y, width-1, height-1, getGdxColor(color));
+            drawer.filledRectangle(x, y, width - 1, height - 1, getGdxColor(color));
         } else {
-            drawer.rectangle(x, y, width-1, height-1, getGdxColor(color));
+            drawer.rectangle(x, y, width - 1, height - 1, getGdxColor(color));
         }
     }
 
@@ -203,7 +210,8 @@ public class LIKOGdxGraphics implements Graphics {
 
     @Override
     public void ellipse(float x, float y, float radiusX, float radiusY, Boolean filled, Integer color) {
-        x += 0.5f; y += 0.5f;
+        x += 0.5f;
+        y += 0.5f;
         drawer.setColor(getGdxColor(color));
         if (filled) {
             drawer.filledEllipse(x, y, radiusX, radiusY);
