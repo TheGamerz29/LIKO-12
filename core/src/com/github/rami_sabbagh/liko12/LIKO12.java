@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,6 +26,13 @@ public class LIKO12 extends ApplicationAdapter {
     Image testImage;
 
     Vector2 inputVec;
+    float[] transformation = {
+            1, 0, 1,
+            0, 1, 1,
+            0, 0, 1
+    };
+    Matrix3 tempMatrix;
+    Matrix3 transMatrix;
 
     @Override
     public void create() {
@@ -45,12 +53,14 @@ public class LIKO12 extends ApplicationAdapter {
         testImage = testImageData.toImage();
 
         inputVec = new Vector2();
+        tempMatrix = new Matrix3();
+        transMatrix = new Matrix3(transformation);
     }
 
     void renderBuffer() {
         gdxFrameBuffer.begin();
 
-        if (Gdx.input.isButtonPressed(LEFT)) {
+        if (Gdx.input.isButtonJustPressed(LEFT)) {
             ImageData imageData = graphics.screenshot();
 
             testImageData.dispose();
@@ -58,6 +68,10 @@ public class LIKO12 extends ApplicationAdapter {
 
             testImageData = imageData;
             testImage = testImageData.toImage();
+
+            tempMatrix.set(graphics.getMatrix());
+            tempMatrix.mul(transMatrix);
+            graphics.setMatrix(tempMatrix.getValues());
         }
 
         graphics.clear(0);

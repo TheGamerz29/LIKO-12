@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Matrix3;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidPaletteColorException;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
@@ -15,6 +17,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import java.nio.ByteBuffer;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGB888;
+import static com.badlogic.gdx.math.Matrix3.*;
 
 public class GdxGraphics implements Graphics {
 
@@ -23,6 +26,8 @@ public class GdxGraphics implements Graphics {
     private final GdxFrameBuffer gdxFrameBuffer;
     private final FrameBuffer frameBuffer;
     private final ShapeDrawer drawer;
+    private final PolygonSpriteBatch batch;
+    private final Matrix3 transformationMatrix;
     private final Color[] defaultColorsPalette;
 
     /**
@@ -42,7 +47,8 @@ public class GdxGraphics implements Graphics {
         this.gdxFrameBuffer = gdxFrameBuffer;
         frameBuffer = this.gdxFrameBuffer.frameBuffer;
         drawer = this.gdxFrameBuffer.drawer;
-
+        batch = this.gdxFrameBuffer.batch;
+        transformationMatrix = this.gdxFrameBuffer.transformationMatrix;
         reusableColor = new Color();
 
         colors = new Color[MAX_COLORS];
@@ -70,38 +76,40 @@ public class GdxGraphics implements Graphics {
     }
 
     @Override
-    public void translate(int x, int y) {
-        //TODO: Implement me.
+    public float[] getMatrix() {
+        float[] values = new float[9];
+        float[] matrixValues = transformationMatrix.getValues();
+        values[0] = matrixValues[M00];
+        values[1] = matrixValues[M01];
+        values[2] = matrixValues[M02];
+        values[3] = matrixValues[M10];
+        values[4] = matrixValues[M11];
+        values[5] = matrixValues[M12];
+        values[6] = matrixValues[M20];
+        values[7] = matrixValues[M21];
+        values[8] = matrixValues[M22];
+        return values;
     }
 
     @Override
-    public void scale(int scaleX, int scaleY) {
-        //TODO: Implement me.
-    }
+    public void setMatrix(float[] matrix) {
+        if (matrix.length != 9)
+            throw new IllegalArgumentException("The matrix float[] array must be 9 floats length, provided: " + matrix.length);
+        float[] matrixValues = transformationMatrix.getValues();
 
-    @Override
-    public void rotate(double angle) {
-        //TODO: Implement me.
-    }
+        matrixValues[M00] = matrix[0];
+        matrixValues[M01] = matrix[1];
+        matrixValues[M02] = matrix[2];
+        matrixValues[M10] = matrix[3];
+        matrixValues[M11] = matrix[4];
+        matrixValues[M12] = matrix[5];
+        matrixValues[M20] = matrix[6];
+        matrixValues[M21] = matrix[7];
+        matrixValues[M22] = matrix[8];
 
-    @Override
-    public void shear(int x, int y) {
-        //TODO: Implement me.
-    }
-
-    @Override
-    public void pushMatrix() {
-        //TODO: Implement me.
-    }
-
-    @Override
-    public void popMatrix() {
-        //TODO: Implement me.
-    }
-
-    @Override
-    public void resetMatrix() {
-        //TODO: Implement me.
+        batch.end();
+        gdxFrameBuffer.updateTransformationMatrix();
+        batch.begin();
     }
 
     @Override

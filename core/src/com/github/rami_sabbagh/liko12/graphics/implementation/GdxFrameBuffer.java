@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.utils.Disposable;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -41,6 +42,11 @@ public class GdxFrameBuffer implements Disposable {
      * The shapes drawer for LIKO-12 drawing operations.
      */
     public final ShapeDrawer drawer;
+
+    /**
+     * The transformation matrix of LIKO-12.
+     */
+    public final Matrix3 transformationMatrix;
 
     /**
      * The ShaderProgram of LIKO-12.
@@ -79,8 +85,11 @@ public class GdxFrameBuffer implements Disposable {
         batch = new PolygonSpriteBatch();
         batch.setProjectionMatrix(camera.combined);
 
-        shader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("fragmentShader.glsl"));
+        transformationMatrix = new Matrix3();
+
+        shader = new ShaderProgram(Gdx.files.internal("matrixShader.glsl"), Gdx.files.internal("fragmentShader.glsl"));
         if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+        updateTransformationMatrix();
         batch.setShader(shader);
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
@@ -208,5 +217,10 @@ public class GdxFrameBuffer implements Disposable {
         displayShader.bind();
         displayShader.setUniform4fv("u_palette", colorsPalette, 0, colorsPalette.length);
         colorsPaletteModified = false;
+    }
+
+    public void updateTransformationMatrix() {
+        shader.bind();
+        shader.setUniformMatrix("u_transMatrix", transformationMatrix);
     }
 }

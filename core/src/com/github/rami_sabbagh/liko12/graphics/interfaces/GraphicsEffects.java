@@ -29,52 +29,20 @@ public interface GraphicsEffects {
     void setDrawingPattern(Image pattern);
 
     /**
-     * Shifts all drawing operations.
+     * Gets the 3x3 transformation matrix affecting the drawing operations.
      *
-     * @param x The translation relative to the X-axis.
-     * @param y The translation relative to the Y-axis.
+     * @return A <a href="https://duckduckgo.com/?t=ffab&q=row-major+array&ia=web">row-major</a> 9 floats array
+     * containing the values of the 3x3 matrix.
      */
-    void translate(int x, int y);
+    float[] getMatrix();
 
     /**
-     * Scales the coordinates system and the drawing operations.
+     * Sets the 3x3 transformation matrix affecting the drawing operations.
      *
-     * @param scaleX The scaling in the direction of the X-axis.
-     * @param scaleY The scaling in the direction of the Y-axis.
+     * @param matrix A <a href="https://duckduckgo.com/?t=ffab&q=row-major+array&ia=web">row-major</a> 9 floats array
+     *               containing the values of the 3x3 matrix.
      */
-    void scale(int scaleX, int scaleY);
-
-    /**
-     * Rotates the coordinate system.
-     *
-     * @param angle The amount to rotate the coordinate system in <b>radians</b>.
-     */
-    void rotate(double angle);
-
-    /**
-     * Shears the coordinate system.
-     *
-     * @param x The shear factor on the X-axis.
-     * @param y The shear factor on the Y-axis.
-     */
-    void shear(int x, int y);
-
-    //TODO: Figure out if there's any way better than the matrix stack, or allow more control over it.
-
-    /**
-     * Copies and pushes the current coordinate transformations to the transformations stack.
-     */
-    void pushMatrix();
-
-    /**
-     * Pops the last coordinate transformations from the transformations stack.
-     */
-    void popMatrix();
-
-    /**
-     * Resets the current coordinate system transformations.
-     */
-    void resetMatrix();
+    void setMatrix(float[] matrix);
 
     /**
      * Sets the RGB values of a palette color.
