@@ -4,12 +4,14 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.rami_sabbagh.liko12.graphics.implementation.GdxFrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.implementation.GdxGraphics;
+import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
+import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
+import com.github.rami_sabbagh.liko12.graphics.interfaces.PixelFunction;
 
 public class LIKO12 extends ApplicationAdapter {
     Viewport viewport;
@@ -17,7 +19,8 @@ public class LIKO12 extends ApplicationAdapter {
     GdxFrameBuffer gdxFrameBuffer;
     GdxGraphics graphics;
     SpriteBatch batch;
-    ShaderProgram displayShader;
+    ImageData testImageData;
+    Image testImage;
 
     Vector2 inputVec;
 
@@ -28,15 +31,16 @@ public class LIKO12 extends ApplicationAdapter {
         graphics = new GdxGraphics(gdxFrameBuffer);
 
         batch = new SpriteBatch();
-        displayShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("displayShader.glsl"));
-        if (!displayShader.isCompiled())
-            throw new IllegalArgumentException("Error compiling shader: " + displayShader.getLog());
-        batch.setShader(displayShader);
+        batch.setShader(gdxFrameBuffer.displayShader);
 
-        displayShader.bind();
-        for (int colorId = 0; colorId < 16; colorId++) {
-            displayShader.setUniformf("u_palette[" + colorId + "]", graphics.defaultColorsPalette[colorId]);
-        }
+        testImageData = graphics.newImageData(128, 16);
+        testImageData.mapPixels(new PixelFunction() {
+            @Override
+            public int apply(int x, int y, int color) {
+                return (x + y) % 16;
+            }
+        });
+        testImage = testImageData.toImage();
 
         inputVec = new Vector2();
     }
@@ -56,15 +60,17 @@ public class LIKO12 extends ApplicationAdapter {
         graphics.point(191, 0, null);
         graphics.point(0, 127, null);
         graphics.point(191, 127, null);
+//        hasan was here
 
-        graphics.rectangle(2,2, 5*16+2, 5+2, true, 0);
+        graphics.rectangle(2, 2, 5 * 16 + 2, 5 + 2, true, 0);
         for (int i = 0; i < 16; i++) graphics.rectangle(3 + i * 5, 3, 5, 5, false, i);
+
+        testImage.draw(3, 10, null, null, null, null, null, null, null);
 
         inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
         viewport.unproject(inputVec);
         inputVec.x = (float) Math.floor(inputVec.x);
         inputVec.y = (float) Math.floor(inputVec.y);
-        //graphics.point(inputVec.x, inputVec.y, 15);
         graphics.circle(inputVec.x, inputVec.y, 8, true, 15);
 
         gdxFrameBuffer.end();
@@ -88,6 +94,8 @@ public class LIKO12 extends ApplicationAdapter {
     public void dispose() {
         gdxFrameBuffer.dispose();
         batch.dispose();
+        testImageData.dispose();
+        testImage.dispose();
     }
 
     @Override

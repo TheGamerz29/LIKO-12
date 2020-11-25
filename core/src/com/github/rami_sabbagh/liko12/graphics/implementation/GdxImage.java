@@ -2,11 +2,10 @@ package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Disposable;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
 
-public class GdxImage implements Image, Disposable {
+public class GdxImage implements Image {
 
     private final int width;
     private final int height;
@@ -38,6 +37,16 @@ public class GdxImage implements Image, Disposable {
 
     @Override
     public void draw(float x, float y, Float rotation, Float scaleX, Float scaleY, Integer srcX, Integer srcY, Integer srcWidth, Integer srcHeight) {
+        if (rotation == null) rotation = 0.0f;
+        if (scaleX == null) scaleX = 1.0f;
+        if (scaleY == null) scaleY = 1.0f;
+        if (srcX == null) srcX = 0;
+        if (srcY == null) srcY = 0;
+        if (srcWidth == null) srcWidth = width;
+        if (srcHeight == null) srcHeight = height;
+
+        //TODO: Fix the region.
+
         frameBuffer.batch.draw(textureRegion,
                 x, y,
                 0, 0,
@@ -59,6 +68,5 @@ public class GdxImage implements Image, Disposable {
     @Override
     public void dispose() {
         this.texture.dispose();
-        this.imageData.dispose();
     }
 }

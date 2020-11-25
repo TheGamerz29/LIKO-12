@@ -1,9 +1,11 @@
 package com.github.rami_sabbagh.liko12.graphics.interfaces;
 
+import com.badlogic.gdx.utils.Disposable;
+
 /**
  * Represents a drawable image, which can be drawn to the screen.
  */
-public interface Image {
+public interface Image extends Disposable {
     /**
      * Gets the width of the image.
      *

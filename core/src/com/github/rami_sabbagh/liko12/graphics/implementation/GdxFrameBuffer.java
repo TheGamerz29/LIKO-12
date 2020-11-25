@@ -1,6 +1,7 @@
 package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -35,15 +36,26 @@ public class GdxFrameBuffer implements Disposable {
      * A Polygon sprite batch for the shapes and images drawing operations.
      */
     public final PolygonSpriteBatch batch;
-    /**
-     * The ShaderProgram of LIKO-12.
-     */
-    public final ShaderProgram shader;
 
     /**
      * The shapes drawer for LIKO-12 drawing operations.
      */
     public final ShapeDrawer drawer;
+
+    /**
+     * The ShaderProgram of LIKO-12.
+     */
+    public final ShaderProgram shader;
+    /**
+     * The display shader of LIKO-12.
+     * Which remaps the pixels values from color ids into their actual values from the palette.
+     */
+    public final ShaderProgram displayShader;
+
+    /**
+     * The colors palette of LIKO-12's display, stored as an array of floats, for the ease of uploading into the shader.
+     */
+    private final float[] colorsPalette;
 
     /**
      * Creates a new framebuffer of the desired dimensions.
@@ -69,22 +81,12 @@ public class GdxFrameBuffer implements Disposable {
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
         drawer.setDefaultSnap(true);
-    }
 
-    /**
-     * Binds the LIKO-12's framebuffer and allows drawing operations to be made afterwards.
-     */
-    public void begin() {
-        frameBuffer.begin();
-        batch.begin();
-    }
-
-    /**
-     * Unbinds the LIKO-12's framebuffer and drawing operations won't be allowed afterwards.
-     */
-    public void end() {
-        batch.end();
-        frameBuffer.end();
+        colorsPalette = loadColorsPaletteFromImage(Gdx.files.internal("palette.png"));
+        displayShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("displayShader.glsl"));
+        if (!shader.isCompiled())
+            throw new IllegalArgumentException("Error compiling the display shader: " + shader.getLog());
+        updateDisplayShaderPalette();
     }
 
     /**
@@ -103,6 +105,82 @@ public class GdxFrameBuffer implements Disposable {
         return texture;
     }
 
+    /**
+     * Loads a color palette from an image file.
+     *
+     * @param file The {@code FileHandle}.
+     * @return A floats array containing the colors extracted from the image.
+     */
+    private static float[] loadColorsPaletteFromImage(FileHandle file) {
+        Pixmap pixmap = new Pixmap(file);
+        float[] colorsPalette = new float[pixmap.getWidth() * pixmap.getHeight() * 4];
+
+        for (int colorId = 0; colorId < pixmap.getWidth() * pixmap.getHeight(); colorId++) {
+            int colorRGBA = pixmap.getPixel(colorId % pixmap.getWidth(), colorId / pixmap.getWidth());
+            colorsPalette[colorId * 4] = ((colorRGBA & 0xff000000) >>> 24) / 255f; //color.r
+            colorsPalette[colorId * 4 + 1] = ((colorRGBA & 0x00ff0000) >>> 16) / 255f; //color.g
+            colorsPalette[colorId * 4 + 2] = ((colorRGBA & 0x0000ff00) >>> 8) / 255f; //color.b
+            colorsPalette[colorId * 4 + 3] = ((colorRGBA & 0x000000ff)) / 255f; //color.a
+        }
+
+        pixmap.dispose();
+        return colorsPalette;
+    }
+
+    /**
+     * Gets the value of a color in the colors palette, creatine a new Color object.
+     *
+     * @param colorId The id of the color in the palette.
+     * @return The newly created color object.
+     */
+    public Color getColor(int colorId) {
+        return getColor(colorId, new Color());
+    }
+
+    /**
+     * Gets the value of a color in the colors palette, reusing an existing Color object.
+     *
+     * @param colorId The id of the color in the palette.
+     * @param color   The color object to reuse.
+     * @return The reused color object.
+     */
+    public Color getColor(int colorId, Color color) {
+        color.r = colorsPalette[colorId * 4];
+        color.g = colorsPalette[colorId * 4 + 1];
+        color.b = colorsPalette[colorId * 4 + 2];
+        color.a = colorsPalette[colorId * 4 + 3];
+        return color;
+    }
+
+    /**
+     * Sets the value of a color in the colors palette.
+     *
+     * @param colorId The id of the color in the palette.
+     * @param color   The new color.
+     */
+    public void setColor(int colorId, Color color) {
+        colorsPalette[colorId * 4] = color.r;
+        colorsPalette[colorId * 4 + 1] = color.g;
+        colorsPalette[colorId * 4 + 2] = color.b;
+        colorsPalette[colorId * 4 + 3] = color.a;
+    }
+
+    /**
+     * Binds the LIKO-12's framebuffer and allows drawing operations to be made afterwards.
+     */
+    public void begin() {
+        frameBuffer.begin();
+        batch.begin();
+    }
+
+    /**
+     * Unbinds the LIKO-12's framebuffer and drawing operations won't be allowed afterwards.
+     */
+    public void end() {
+        batch.end();
+        frameBuffer.end();
+    }
+
     //TODO: Maybe add an update method, check the ShapeDrawer wiki.
 
     @Override
@@ -111,5 +189,11 @@ public class GdxFrameBuffer implements Disposable {
         drawerTexture.dispose();
         batch.dispose();
         shader.dispose();
+        displayShader.dispose();
+    }
+
+    private void updateDisplayShaderPalette() {
+        displayShader.bind();
+        displayShader.setUniform4fv("u_palette", colorsPalette, 0, colorsPalette.length);
     }
 }

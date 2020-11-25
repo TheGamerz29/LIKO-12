@@ -1,24 +1,23 @@
 package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.utils.Disposable;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidCoordinatesException;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
+import com.github.rami_sabbagh.liko12.graphics.interfaces.PixelFunction;
 
 import java.nio.ByteBuffer;
 
 import static com.badlogic.gdx.graphics.Pixmap.Blending.None;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGB888;
 
-public class GdxImageData implements ImageData, Disposable {
+public class GdxImageData implements ImageData {
 
     private final static int MAX_COLORS = 16;
-
+    protected final Pixmap pixmap;
     private final int width;
     private final int height;
-    protected final Pixmap pixmap;
     private final ByteBuffer buffer;
     private final GdxFrameBuffer frameBuffer;
 
@@ -47,7 +46,7 @@ public class GdxImageData implements ImageData, Disposable {
         if (x < 0 || x >= width) throw new InvalidCoordinatesException(x, width, false);
         if (y < 0 || y >= height) throw new InvalidCoordinatesException(y, height, true);
 
-        return buffer.get((x + y * width) * 3);
+        return buffer.get((x + (height - y - 1) * width) * 3);
     }
 
     @Override
@@ -56,19 +55,19 @@ public class GdxImageData implements ImageData, Disposable {
         if (y < 0 || y >= height) throw new InvalidCoordinatesException(y, height, true);
         if (color < 0 || color >= MAX_COLORS) throw new InvalidColorException(color, MAX_COLORS);
 
-        buffer.put((x + y * width) * 3, (byte) color);
+        buffer.put((x + (height - y - 1) * width) * 3, (byte) (color / 15.0f * 255.0f));
     }
 
     @Override
     public void mapPixels(PixelFunction mapper) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int index = (x + y * width) * 3;
+                int index = (x + (height - y - 1) * width) * 3;
 
-                int color = mapper.apply(x, y, buffer.get(index));
+                int color = mapper.apply(x, y, (int) (buffer.get(index) / 255.0f * 15.0f));
                 if (color < 0 || color >= MAX_COLORS) throw new InvalidColorException(color, MAX_COLORS);
 
-                buffer.put(index, (byte) color);
+                buffer.put(index, (byte) (color / 15.0f * 255.0f));
             }
         }
     }

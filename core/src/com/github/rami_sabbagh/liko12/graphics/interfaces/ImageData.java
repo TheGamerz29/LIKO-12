@@ -1,9 +1,11 @@
 package com.github.rami_sabbagh.liko12.graphics.interfaces;
 
+import com.badlogic.gdx.utils.Disposable;
+
 /**
  * Represents the pixel data of an image, which can be modified, but not drawn into the screen.
  */
-public interface ImageData {
+public interface ImageData extends Disposable {
     /**
      * Gets the width of the imageData.
      *
@@ -70,19 +72,4 @@ public interface ImageData {
      * @return The encoded PNG binary data as a String.
      */
     String export();
-
-    /**
-     * A function that can be applied on a pixel.
-     */
-    interface PixelFunction {
-        /**
-         * Applies the function on the given pixel.
-         *
-         * @param x     The X coordinates of the pixel.
-         * @param y     The Y coordinates of the pixel.
-         * @param color The current color of the pixel.
-         * @return The new color of the pixel.
-         */
-        int apply(int x, int y, int color);
-    }
 }

@@ -1,10 +1,8 @@
 package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
@@ -19,39 +17,29 @@ public class GdxGraphics implements Graphics {
     private final GdxFrameBuffer gdxFrameBuffer;
     private final FrameBuffer frameBuffer;
     private final ShapeDrawer drawer;
-    public final Color[] colorPalette;
-    public final Color[] defaultColorsPalette;
-    private int activeColor = 0;
+    private final Color[] defaultColorsPalette;
+
+    /**
+     * The palette-independent colors used for drawing into the internal buffer.
+     */
+    private final Color[] colors;
+    /**
+     * The current active color for drawing operations.
+     */
+    private int activeColor;
 
     public GdxGraphics(GdxFrameBuffer gdxFrameBuffer) {
         this.gdxFrameBuffer = gdxFrameBuffer;
         frameBuffer = this.gdxFrameBuffer.frameBuffer;
         drawer = this.gdxFrameBuffer.drawer;
 
-        defaultColorsPalette = loadColorsPaletteFromImage(Gdx.files.internal("palette.png"));
-        colorPalette = new Color[defaultColorsPalette.length];
-        for (int colorId = 0; colorId < colorPalette.length; colorId++)
-            colorPalette[colorId] = new Color(colorId / 15.0f, 0, 0, 1.0f);//new Color(defaultColorsPalette[colorId]);
-    }
+        colors = new Color[MAX_COLORS];
+        for (int colorId = 0; colorId < MAX_COLORS; colorId++)
+            colors[colorId] = new Color(colorId / (MAX_COLORS - 1.0f), 0, 0, 1);
 
-    /**
-     * Loads a color palette from an image file.
-     *
-     * @param file The {@code FileHandle}.
-     * @return An array containing the colors extracted from the image.
-     */
-    private static Color[] loadColorsPaletteFromImage(FileHandle file) {
-        Pixmap pixmap = new Pixmap(file);
-        Color[] colors = new Color[pixmap.getWidth() * pixmap.getHeight()];
-
-        for (int colorId = 0; colorId < colors.length; colorId++) {
-            int colorRGBA = pixmap.getPixel(colorId % pixmap.getWidth(),
-                    colorId / pixmap.getWidth());
-            colors[colorId] = new Color(colorRGBA);
-        }
-
-        pixmap.dispose();
-        return colors;
+        defaultColorsPalette = new Color[MAX_COLORS];
+        for (int colorId = 0; colorId < MAX_COLORS; colorId++)
+            defaultColorsPalette[colorId] = this.gdxFrameBuffer.getColor(colorId);
     }
 
     private static void validateColor(int color) {
@@ -251,6 +239,6 @@ public class GdxGraphics implements Graphics {
         if (color == null) color = activeColor;
         else validateColor(color);
 
-        return colorPalette[color];
+        return colors[color];
     }
 }
