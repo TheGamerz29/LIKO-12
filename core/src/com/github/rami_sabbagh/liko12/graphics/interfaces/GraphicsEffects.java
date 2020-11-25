@@ -1,5 +1,7 @@
 package com.github.rami_sabbagh.liko12.graphics.interfaces;
 
+import com.badlogic.gdx.graphics.Color;
+
 /**
  * Allows to perform some graphics effects.
  */
@@ -90,7 +92,7 @@ public interface GraphicsEffects {
      * @param color The palette's color to get.
      * @return The RGB values of the requested color.
      */
-    PaletteColor getPaletteColor(int color);
+    Color getPaletteColor(int color);
 
     /**
      * Resets the palette color to it's initial RGB values.
@@ -120,12 +122,5 @@ public interface GraphicsEffects {
      * @param color The color to make opaque.
      */
     void makeColorOpaque(int color);
-
-    //TODO: Figure a way to unpack this in the Lua wrapper, avoiding the whole creation of the Lua table holding the 3 values.
-    class PaletteColor {
-        int r;
-        int g;
-        int b;
-    }
 
 }

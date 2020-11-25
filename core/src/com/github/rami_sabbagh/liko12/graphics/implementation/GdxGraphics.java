@@ -3,12 +3,18 @@ package com.github.rami_sabbagh.liko12.graphics.implementation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
+import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidPaletteColorException;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
 import space.earlygrey.shapedrawer.ShapeDrawer;
+
+import java.nio.ByteBuffer;
+
+import static com.badlogic.gdx.graphics.Pixmap.Format.RGB888;
 
 public class GdxGraphics implements Graphics {
 
@@ -24,6 +30,10 @@ public class GdxGraphics implements Graphics {
      */
     private final Color[] colors;
     /**
+     * A reusable color object, used to pass color values to some functions.
+     */
+    private final Color reusableColor;
+    /**
      * The current active color for drawing operations.
      */
     private int activeColor;
@@ -32,6 +42,8 @@ public class GdxGraphics implements Graphics {
         this.gdxFrameBuffer = gdxFrameBuffer;
         frameBuffer = this.gdxFrameBuffer.frameBuffer;
         drawer = this.gdxFrameBuffer.drawer;
+
+        reusableColor = new Color();
 
         colors = new Color[MAX_COLORS];
         for (int colorId = 0; colorId < MAX_COLORS; colorId++)
@@ -94,17 +106,26 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void setPaletteColor(int color, int r, int g, int b) {
-        //TODO: Implement me.
+        validateColor(color);
+
+        if (r < 0 || r >= 256) throw new InvalidPaletteColorException(r);
+        if (g < 0 || g >= 256) throw new InvalidPaletteColorException(g);
+        if (b < 0 || b >= 256) throw new InvalidPaletteColorException(b);
+
+        reusableColor.set((r << 24) | (g << 16) | (b << 8) | 0xFF);
+        gdxFrameBuffer.setColor(color, reusableColor);
     }
 
     @Override
-    public PaletteColor getPaletteColor(int color) {
-        return null; //TODO: Implement me.
+    public Color getPaletteColor(int color) {
+        validateColor(color);
+        return gdxFrameBuffer.getColor(color);
     }
 
     @Override
     public void resetPaletteColor(int color) {
-        //TODO: Implement me.
+        validateColor(color);
+        gdxFrameBuffer.setColor(color, defaultColorsPalette[color]);
     }
 
     @Override
@@ -220,7 +241,14 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public ImageData screenshot() {
-        return null; //TODO: Implement me.
+        Pixmap pixmap = new Pixmap(getWidth(), getHeight(), RGB888);
+        ByteBuffer pixels = pixmap.getPixels();
+        pixels.clear();
+        Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+        Gdx.gl.glReadPixels(0, 0, getWidth(), getHeight(), GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+        pixels.position(0);
+
+        return new GdxImageData(gdxFrameBuffer, pixmap);
     }
 
     @Override

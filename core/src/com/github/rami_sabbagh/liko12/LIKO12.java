@@ -13,6 +13,8 @@ import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.PixelFunction;
 
+import static com.badlogic.gdx.Input.Buttons.LEFT;
+
 public class LIKO12 extends ApplicationAdapter {
     Viewport viewport;
 
@@ -47,6 +49,16 @@ public class LIKO12 extends ApplicationAdapter {
 
     void renderBuffer() {
         gdxFrameBuffer.begin();
+
+        if (Gdx.input.isButtonPressed(LEFT)) {
+            ImageData imageData = graphics.screenshot();
+
+            testImageData.dispose();
+            testImage.dispose();
+
+            testImageData = imageData;
+            testImage = testImageData.toImage();
+        }
 
         graphics.clear(0);
         graphics.setColor(7);
@@ -83,6 +95,8 @@ public class LIKO12 extends ApplicationAdapter {
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        gdxFrameBuffer.prepare();
 
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();

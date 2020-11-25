@@ -37,13 +37,8 @@ public interface Image extends Disposable {
 
     /**
      * Updates the image's content from the ImageData used to create the image.
+     * <b>Note:</b> the image won't be refreshed if the source imageData was garbageCollected/disposed.
      */
     void refresh();
 
-    /**
-     * Gets the ImageData used to create the image.
-     *
-     * @return The ImageData used to create the image.
-     */
-    ImageData getImageData();
 }

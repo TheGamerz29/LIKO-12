@@ -1,26 +1,26 @@
 package com.github.rami_sabbagh.liko12.graphics.implementation;
 
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
-import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
 
 public class GdxImage implements Image {
 
     private final int width;
     private final int height;
-    private final GdxImageData imageData;
+    private final Pixmap pixmap;
     private final Texture texture;
     private final TextureRegion textureRegion;
     private final GdxFrameBuffer frameBuffer;
 
-    public GdxImage(GdxImageData imageData, GdxFrameBuffer frameBuffer) {
-        this.imageData = imageData;
-        this.texture = new Texture(this.imageData.pixmap);
+    public GdxImage(Pixmap pixmap, GdxFrameBuffer frameBuffer) {
+        this.pixmap = pixmap;
+        this.texture = new Texture(this.pixmap);
         this.textureRegion = new TextureRegion(this.texture);
 
-        this.width = this.imageData.getWidth();
-        this.height = this.imageData.getHeight();
+        this.width = this.pixmap.getWidth();
+        this.height = this.pixmap.getHeight();
 
         this.frameBuffer = frameBuffer;
     }
@@ -57,12 +57,8 @@ public class GdxImage implements Image {
 
     @Override
     public void refresh() {
-        texture.draw(imageData.pixmap, 0, 0);
-    }
-
-    @Override
-    public ImageData getImageData() {
-        return imageData;
+        if (pixmap.isDisposed()) return;
+        texture.draw(pixmap, 0, 0);
     }
 
     @Override

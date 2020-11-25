@@ -56,6 +56,10 @@ public class GdxFrameBuffer implements Disposable {
      * The colors palette of LIKO-12's display, stored as an array of floats, for the ease of uploading into the shader.
      */
     private final float[] colorsPalette;
+    /**
+     * Whether the color palette was modified since the last time the palette was uploaded to the shader.
+     */
+    private boolean colorsPaletteModified;
 
     /**
      * Creates a new framebuffer of the desired dimensions.
@@ -163,6 +167,7 @@ public class GdxFrameBuffer implements Disposable {
         colorsPalette[colorId * 4 + 1] = color.g;
         colorsPalette[colorId * 4 + 2] = color.b;
         colorsPalette[colorId * 4 + 3] = color.a;
+        colorsPaletteModified = true;
     }
 
     /**
@@ -181,6 +186,13 @@ public class GdxFrameBuffer implements Disposable {
         frameBuffer.end();
     }
 
+    /**
+     * Prepares the LIKO-12's framebuffer and display shader for rendering on the screen.
+     */
+    public void prepare() {
+        if (colorsPaletteModified) updateDisplayShaderPalette();
+    }
+
     //TODO: Maybe add an update method, check the ShapeDrawer wiki.
 
     @Override
@@ -195,5 +207,6 @@ public class GdxFrameBuffer implements Disposable {
     private void updateDisplayShaderPalette() {
         displayShader.bind();
         displayShader.setUniform4fv("u_palette", colorsPalette, 0, colorsPalette.length);
+        colorsPaletteModified = false;
     }
 }

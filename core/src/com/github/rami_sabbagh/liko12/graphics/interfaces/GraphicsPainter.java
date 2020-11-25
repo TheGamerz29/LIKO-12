@@ -91,23 +91,23 @@ public interface GraphicsPainter {
     /**
      * Draws a circle on the screen.
      *
-     * @param x        The X coordinates of the circle's center.
-     * @param y        The Y coordinates of the circle's center.
-     * @param radius   The radius of the circle.
-     * @param filled   Whether to fill the circle or only outline it. Defaults to false (outlined).
-     * @param color    The color of the circle. Defaults to the active color.
+     * @param x      The X coordinates of the circle's center.
+     * @param y      The Y coordinates of the circle's center.
+     * @param radius The radius of the circle.
+     * @param filled Whether to fill the circle or only outline it. Defaults to false (outlined).
+     * @param color  The color of the circle. Defaults to the active color.
      */
     void circle(float x, float y, float radius, Boolean filled, Integer color);
 
     /**
      * Draws an ellipse on the screen.
      *
-     * @param x        The X coordinates of the ellipse's center.
-     * @param y        The Y coordinates of the ellipse's center.
-     * @param radiusX  The radius of the ellipse along the X-axis (half the ellipse's width).
-     * @param radiusY  The radius of the ellipse along the Y-axis (half the ellipse's height).
-     * @param filled   Whether to fill the ellipse or only outline it. Defaults to false (outlined).
-     * @param color    The color of the ellipse. Defaults to the active color.
+     * @param x       The X coordinates of the ellipse's center.
+     * @param y       The Y coordinates of the ellipse's center.
+     * @param radiusX The radius of the ellipse along the X-axis (half the ellipse's width).
+     * @param radiusY The radius of the ellipse along the Y-axis (half the ellipse's height).
+     * @param filled  Whether to fill the ellipse or only outline it. Defaults to false (outlined).
+     * @param color   The color of the ellipse. Defaults to the active color.
      */
     void ellipse(float x, float y, float radiusX, float radiusY, Boolean filled, Integer color);
 }

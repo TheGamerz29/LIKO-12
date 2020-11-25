@@ -14,6 +14,8 @@ import static com.badlogic.gdx.graphics.Pixmap.Format.RGB888;
 
 public class GdxImageData implements ImageData {
 
+    //Implementation note: The Y coordinates are flipped, because the image is being flipped when drawn.
+
     private final static int MAX_COLORS = 16;
     protected final Pixmap pixmap;
     private final int width;
@@ -22,11 +24,21 @@ public class GdxImageData implements ImageData {
     private final GdxFrameBuffer frameBuffer;
 
     public GdxImageData(GdxFrameBuffer frameBuffer, int width, int height) {
+        this(frameBuffer, new Pixmap(width, height, RGB888));
+    }
+
+    public GdxImageData(GdxFrameBuffer frameBuffer, Pixmap pixmap) {
+        if (pixmap.getFormat() != RGB888)
+            throw new UnsupportedOperationException("Unsupported pixmap format: " + pixmap.getFormat().name());
+
         this.frameBuffer = frameBuffer;
-        this.width = width;
-        this.height = height;
-        this.pixmap = new Pixmap(width, height, RGB888);
+        this.width = pixmap.getWidth();
+        this.height = pixmap.getHeight();
+        this.pixmap = pixmap;
         this.buffer = this.pixmap.getPixels();
+
+        //Set the blue channel for all the pixels into 1, so the shader can figure those are images pixels.
+        for (int i = 2; i < this.width * this.height * 3; i += 3) this.buffer.put(i, (byte) 0xFF);
 
         this.pixmap.setBlending(None);
     }
@@ -93,7 +105,7 @@ public class GdxImageData implements ImageData {
 
     @Override
     public Image toImage() {
-        return new GdxImage(this, this.frameBuffer);
+        return new GdxImage(this.pixmap, this.frameBuffer);
     }
 
     @Override
