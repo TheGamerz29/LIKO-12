@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.Color;
  */
 public interface GraphicsEffects {
 
-    //TODO: Search if it's possible to pass around the transformation matrix's values.
-
     /**
      * Sets the clipping region of the drawing operations.
      *

@@ -48,7 +48,7 @@ public class GdxImage implements Image {
         //TODO: Fix the region.
 
         frameBuffer.batch.draw(textureRegion,
-                x, y,
+                x + frameBuffer.offsets.imageX, y + frameBuffer.offsets.imageY,
                 0, 0,
                 width, height,
                 scaleX, scaleY,

@@ -19,8 +19,6 @@ public interface GraphicsPainter {
      */
     void setColor(int color);
 
-    //TODO: Add line width and line join style.
-
     /**
      * Clears the screen and fills it with a specific color.
      *

@@ -1,5 +1,6 @@
 package com.github.rami_sabbagh.liko12;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -60,7 +61,7 @@ public class LIKO12 extends ApplicationAdapter {
     void renderBuffer() {
         gdxFrameBuffer.begin();
 
-        if (Gdx.input.isButtonJustPressed(LEFT)) {
+        if (Gdx.input.isButtonJustPressed(LEFT) || Gdx.app.getType() == Application.ApplicationType.Android && Gdx.input.isTouched()) {
             ImageData imageData = graphics.screenshot();
 
             testImageData.dispose();
@@ -88,16 +89,21 @@ public class LIKO12 extends ApplicationAdapter {
         graphics.point(191, 127, null);
 //        hasan was here
 
+        //graphics.line(2, 2, 8, 2, 8);
+
         graphics.rectangle(2, 2, 5 * 16 + 2, 5 + 2, true, 0);
         for (int i = 0; i < 16; i++) graphics.rectangle(3 + i * 5, 3, 5, 5, false, i);
 
-        testImage.draw(3, 10, null, null, null, null, null, null, null);
+        testImage.draw(2, 10, null, null, null, null, null, null, null);
 
         inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
         viewport.unproject(inputVec);
         inputVec.x = (float) Math.floor(inputVec.x);
         inputVec.y = (float) Math.floor(inputVec.y);
+        //graphics.point(inputVec.x, inputVec.y, 15);
         graphics.circle(inputVec.x, inputVec.y, 8, true, 15);
+
+        //graphics.line(96, 64, inputVec.x, inputVec.y, 8);
 
         gdxFrameBuffer.end();
     }

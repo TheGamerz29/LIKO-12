@@ -29,6 +29,7 @@ public class GdxGraphics implements Graphics {
     private final PolygonSpriteBatch batch;
     private final Matrix3 transformationMatrix;
     private final Color[] defaultColorsPalette;
+    private final GdxOffsets offsets;
 
     /**
      * The palette-independent colors used for drawing into the internal buffer.
@@ -48,6 +49,7 @@ public class GdxGraphics implements Graphics {
         frameBuffer = this.gdxFrameBuffer.frameBuffer;
         drawer = this.gdxFrameBuffer.drawer;
         batch = this.gdxFrameBuffer.batch;
+        offsets = this.gdxFrameBuffer.offsets;
         transformationMatrix = this.gdxFrameBuffer.transformationMatrix;
         reusableColor = new Color();
 
@@ -176,50 +178,100 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void point(float x, float y, Integer color) {
-        drawer.rectangle(x + 0.5f, y + 0.5f, 0, 0, getGdxColor(color));
+        rectangle(x, y, 1, 1, true, color);
     }
 
     @Override
     public void line(float x1, float y1, float x2, float y2, Integer color) {
-        drawer.line(x1, y1, x2, y2, getGdxColor(color));
+        //Draw vertical and horizontal lines using rectangles,
+        //because rectangles are more accurate for the line's start and end.
+
+        //Vertical line
+        if (x1 == x2) {
+            float y = Math.min(y1, y2);
+            float height = Math.max(y1, y2) - y + 1;
+
+            rectangle(x1, y, 1, height, true, color);
+            return;
+        }
+
+        //Horizontal line
+        if (y1 == y2) {
+            float x = Math.min(x1, x2);
+            float width = Math.max(x1, x2) - x + 1;
+
+            rectangle(x, y1, width, 1, true, color);
+            return;
+        }
+
+        x1 += offsets.lineX;
+        y1 += offsets.lineY;
+        x2 += offsets.lineX;
+        y2 += offsets.lineY;
+
+        Color gdxColor = getGdxColor(color);
+        drawer.line(x1, y1, x2, y2, gdxColor);
     }
 
     @Override
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3, Boolean filled, Integer color) {
-        x1 += 0.5f;
-        y1 += 0.5f;
-        x2 += 0.5f;
-        y2 += 0.5f;
-        x3 += 0.5f;
-        y3 += 0.5f;
         if (filled) {
+            x1 += offsets.filledTriangleX;
+            y1 += offsets.filledTriangleY;
+            x2 += offsets.filledTriangleX;
+            y2 += offsets.filledTriangleY;
+            x3 += offsets.filledTriangleX;
+            y3 += offsets.filledTriangleY;
+
             drawer.filledTriangle(x1, y1, x2, y2, x3, y3, getGdxColor(color));
         } else {
+            x1 += offsets.triangleX;
+            y1 += offsets.triangleY;
+            x2 += offsets.triangleX;
+            y2 += offsets.triangleY;
+            x3 += offsets.triangleX;
+            y3 += offsets.triangleY;
+
             drawer.triangle(x1, y1, x2, y2, x3, y3, getGdxColor(color));
         }
     }
 
     @Override
     public void rectangle(float x, float y, float width, float height, Boolean filled, Integer color) {
-        x += 0.5f;
-        y += 0.5f;
         if (filled) {
-            drawer.filledRectangle(x, y, width - 1, height - 1, getGdxColor(color));
+            x += offsets.filledRectangleX;
+            y += offsets.filledRectangleY;
+            width += offsets.filledRectangleWidth;
+            height += offsets.filledRectangleHeight;
+
+            drawer.filledRectangle(x, y, width, height, getGdxColor(color));
         } else {
-            drawer.rectangle(x, y, width - 1, height - 1, getGdxColor(color));
+            x += offsets.rectangleX;
+            y += offsets.rectangleY;
+            width += offsets.rectangleWidth;
+            height += offsets.rectangleHeight;
+
+            drawer.rectangle(x, y, width, height, getGdxColor(color));
         }
     }
 
     @Override
     public void polygon(float x1, float y1, float x2, float y2, float x3, float y3, Integer... verticesAndColor) {
         //TODO: Implement me.
+        //TODO: Apply offsets.
     }
 
     @Override
     public void circle(float x, float y, float radius, Boolean filled, Integer color) {
         if (filled) {
+            x += offsets.filledCircleX;
+            y += offsets.filledCircleY;
+
             drawer.filledCircle(x, y, radius, getGdxColor(color));
         } else {
+            x += offsets.circleX;
+            y += offsets.circleY;
+
             drawer.setColor(getGdxColor(color));
             drawer.circle(x, y, radius);
         }
@@ -227,12 +279,16 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void ellipse(float x, float y, float radiusX, float radiusY, Boolean filled, Integer color) {
-        x += 0.5f;
-        y += 0.5f;
         drawer.setColor(getGdxColor(color));
         if (filled) {
+            x += offsets.filledEllipseX;
+            y += offsets.filledEllipseY;
+
             drawer.filledEllipse(x, y, radiusX, radiusY);
         } else {
+            x += offsets.ellipseX;
+            y += offsets.ellipseY;
+
             drawer.ellipse(x, y, radiusX, radiusY);
         }
     }

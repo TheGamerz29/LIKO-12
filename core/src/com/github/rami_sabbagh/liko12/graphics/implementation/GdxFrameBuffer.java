@@ -44,6 +44,11 @@ public class GdxFrameBuffer implements Disposable {
     public final ShapeDrawer drawer;
 
     /**
+     * The drawing operations offsets.
+     */
+    public final GdxOffsets offsets;
+
+    /**
      * The transformation matrix of LIKO-12.
      */
     public final Matrix3 transformationMatrix;
@@ -95,9 +100,11 @@ public class GdxFrameBuffer implements Disposable {
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
         drawer.setDefaultSnap(true);
 
+        offsets = new GdxOffsets(); //TODO: Automatic offsets detection.
+
         colorsPalette = loadColorsPaletteFromImage(Gdx.files.internal("palette.png"));
         displayShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("displayShader.glsl"));
-        if (!shader.isCompiled())
+        if (!shader.isCompiled()) //TODO: Preprocessing for non-deterministic arrays.
             throw new IllegalArgumentException("Error compiling the display shader: " + shader.getLog());
         updateDisplayShaderPalette();
     }
