@@ -63,6 +63,11 @@ public class LIKO12 extends ApplicationAdapter {
     void renderBuffer() {
         gdxFrameBuffer.begin();
 
+        inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
+        viewport.unproject(inputVec);
+        inputVec.x = (float) Math.floor(inputVec.x);
+        inputVec.y = (float) Math.floor(inputVec.y);
+
         if (Gdx.input.isButtonJustPressed(LEFT) || Gdx.app.getType() == Application.ApplicationType.Android && Gdx.input.isTouched()) {
             ImageData imageData = graphics.screenshot();
 
@@ -84,10 +89,15 @@ public class LIKO12 extends ApplicationAdapter {
         graphics.clear(0);
         graphics.setColor(7);
 
+        graphics.setClip((int) inputVec.x - 16, (int) inputVec.y - 16, 32, 32);
+//        graphics.setClip((int) inputVec.x, (int) inputVec.y, 32, 32);
+
         for (int x = 0; x < graphics.getWidth(); x += 2)
             graphics.line(x, 0, x, graphics.getHeight() - 1, 1);
         for (int y = 0; y < graphics.getHeight(); y += 2)
             graphics.line(0, y, graphics.getWidth() - 1, y, 1);
+
+        graphics.setClip(0, 0, -1, -1);
 
         graphics.point(0, 0, null);
         graphics.point(191, 0, null);
@@ -104,12 +114,8 @@ public class LIKO12 extends ApplicationAdapter {
         scrollOffset = Math.abs(16 - scrollOffset);
         testImage.draw(2, 10, null, null, null, 0, scrollOffset, null, null);
 
-        inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
-        viewport.unproject(inputVec);
-        inputVec.x = (float) Math.floor(inputVec.x);
-        inputVec.y = (float) Math.floor(inputVec.y);
-        //graphics.point(inputVec.x, inputVec.y, 15);
-        graphics.circle(inputVec.x, inputVec.y, 8, true, 15);
+        graphics.point(inputVec.x, inputVec.y, 15);
+//        graphics.circle(inputVec.x, inputVec.y, 8, true, 15);
 
         //graphics.line(96, 64, inputVec.x, inputVec.y, 8);
 

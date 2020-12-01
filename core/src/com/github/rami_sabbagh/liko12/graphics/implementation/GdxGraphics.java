@@ -69,7 +69,16 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void setClip(int x, int y, int width, int height) {
-        //TODO: Implement me.
+        batch.end();
+
+        if ((x <= 0 && y <= 0 && width >= getWidth() && height >= getHeight()) || width < 0 || height < 0) {
+            Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
+        } else {
+            Gdx.gl.glScissor(x, getHeight() - y - height, width, height);
+            Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+        }
+
+        batch.begin();
     }
 
     @Override
@@ -317,7 +326,7 @@ public class GdxGraphics implements Graphics {
 
         //Flip the image vertically
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height/2; y++) {
+            for (int y = 0; y < height / 2; y++) {
                 int fromIndex = (x + y * width) * 3;
                 int toIndex = (x + (height - y - 1) * width) * 3;
 
