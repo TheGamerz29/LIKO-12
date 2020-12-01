@@ -2,8 +2,10 @@ package com.github.rami_sabbagh.liko12.graphics.implementation;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
+
+import static com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest;
+import static com.badlogic.gdx.graphics.Texture.TextureWrap.Repeat;
 
 public class GdxImage implements Image {
 
@@ -11,13 +13,13 @@ public class GdxImage implements Image {
     private final int height;
     private final Pixmap pixmap;
     private final Texture texture;
-    private final TextureRegion textureRegion;
     private final GdxFrameBuffer frameBuffer;
 
     public GdxImage(Pixmap pixmap, GdxFrameBuffer frameBuffer) {
         this.pixmap = pixmap;
         this.texture = new Texture(this.pixmap);
-        this.textureRegion = new TextureRegion(this.texture);
+        this.texture.setFilter(Nearest, Nearest);
+        this.texture.setWrap(Repeat, Repeat);
 
         this.width = this.pixmap.getWidth();
         this.height = this.pixmap.getHeight();
@@ -45,14 +47,15 @@ public class GdxImage implements Image {
         if (srcWidth == null) srcWidth = width;
         if (srcHeight == null) srcHeight = height;
 
-        //TODO: Fix the region.
-
-        frameBuffer.batch.draw(textureRegion,
+        frameBuffer.batch.draw(texture,
                 x + frameBuffer.offsets.imageX, y + frameBuffer.offsets.imageY,
                 0, 0,
-                width, height,
+                srcWidth, srcHeight,
                 scaleX, scaleY,
-                rotation);
+                rotation,
+                srcX, srcY,
+                srcWidth, srcHeight,
+                false, true);
     }
 
     @Override

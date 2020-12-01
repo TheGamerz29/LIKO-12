@@ -14,6 +14,5 @@ public interface GraphicsImages {
      */
     ImageData newImageData(int width, int height);
 
-    //TODO: Add quads.
     //TODO: Add SpriteBatches.
 }

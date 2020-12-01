@@ -305,12 +305,29 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public ImageData screenshot() {
-        Pixmap pixmap = new Pixmap(getWidth(), getHeight(), RGB888);
+        int width = getWidth();
+        int height = getHeight();
+
+        Pixmap pixmap = new Pixmap(width, height, RGB888);
         ByteBuffer pixels = pixmap.getPixels();
         pixels.clear();
         Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
-        Gdx.gl.glReadPixels(0, 0, getWidth(), getHeight(), GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+        Gdx.gl.glReadPixels(0, 0, width, height, GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
         pixels.position(0);
+
+        //Flip the image vertically
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height/2; y++) {
+                int fromIndex = (x + y * width) * 3;
+                int toIndex = (x + (height - y - 1) * width) * 3;
+
+                byte fromValue = pixels.get(fromIndex);
+                byte toValue = pixels.get(toIndex);
+
+                pixels.put(toIndex, fromValue);
+                pixels.put(fromIndex, toValue);
+            }
+        }
 
         return new GdxImageData(gdxFrameBuffer, pixmap);
     }

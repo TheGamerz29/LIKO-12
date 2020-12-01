@@ -32,6 +32,7 @@ public class LIKO12 extends ApplicationAdapter {
             0, 1, 1,
             0, 0, 1
     };
+    Matrix3 identityMatrix;
     Matrix3 tempMatrix;
     Matrix3 transMatrix;
 
@@ -54,6 +55,7 @@ public class LIKO12 extends ApplicationAdapter {
         testImage = testImageData.toImage();
 
         inputVec = new Vector2();
+        identityMatrix = new Matrix3();
         tempMatrix = new Matrix3();
         transMatrix = new Matrix3(transformation);
     }
@@ -70,9 +72,13 @@ public class LIKO12 extends ApplicationAdapter {
             testImageData = imageData;
             testImage = testImageData.toImage();
 
-            tempMatrix.set(graphics.getMatrix());
-            tempMatrix.mul(transMatrix);
-            graphics.setMatrix(tempMatrix.getValues());
+            if (Gdx.input.getX() < Gdx.graphics.getWidth()/2) {
+                graphics.setMatrix(identityMatrix.getValues());
+            } else {
+                tempMatrix.set(graphics.getMatrix());
+                tempMatrix.mul(transMatrix);
+                graphics.setMatrix(tempMatrix.getValues());
+            }
         }
 
         graphics.clear(0);
@@ -94,7 +100,9 @@ public class LIKO12 extends ApplicationAdapter {
         graphics.rectangle(2, 2, 5 * 16 + 2, 5 + 2, true, 0);
         for (int i = 0; i < 16; i++) graphics.rectangle(3 + i * 5, 3, 5, 5, false, i);
 
-        testImage.draw(2, 10, null, null, null, null, null, null, null);
+        int scrollOffset = (int) (System.currentTimeMillis()/100 % 32);
+        scrollOffset = Math.abs(16 - scrollOffset);
+        testImage.draw(2, 10, null, null, null, 0, scrollOffset, null, null);
 
         inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
         viewport.unproject(inputVec);
