@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Matrix3;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidColorException;
 import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidPaletteColorException;
+import com.github.rami_sabbagh.liko12.graphics.exceptions.InvalidVerticesException;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Graphics;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.Image;
 import com.github.rami_sabbagh.liko12.graphics.interfaces.ImageData;
@@ -265,9 +266,16 @@ public class GdxGraphics implements Graphics {
     }
 
     @Override
-    public void polygon(float x1, float y1, float x2, float y2, float x3, float y3, Integer... verticesAndColor) {
-        //TODO: Implement me.
-        //TODO: Apply offsets.
+    public void polygon(float... vertices) {
+        if (vertices.length % 2 == 1 || vertices.length < 6) throw new InvalidVerticesException(vertices);
+
+        for (int i = 0; i < vertices.length; i += 2) {
+            vertices[i] += offsets.polygonX;
+            vertices[i + 1] += offsets.polygonY;
+        }
+
+        drawer.setColor(colors[activeColor]);
+        drawer.filledPolygon(vertices);
     }
 
     @Override

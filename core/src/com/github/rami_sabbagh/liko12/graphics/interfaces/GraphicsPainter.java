@@ -73,18 +73,11 @@ public interface GraphicsPainter {
     void rectangle(float x, float y, float width, float height, Boolean filled, Integer color);
 
     /**
-     * Draws a filled polygon into the screen.
+     * Draws a filled polygon into the screen using the active color.
      *
-     * @param x1               The X coordinates of the polygon's first vertex.
-     * @param y1               The Y coordinates of the polygon's first vertex.
-     * @param x2               The X coordinates of the polygon's second vertex.
-     * @param y2               The Y coordinates of the polygon's second vertex.
-     * @param x3               The X coordinates of the polygon's third vertex.
-     * @param y3               The Y coordinates of the polygon's third vertex.
-     * @param verticesAndColor Any other vertices of the polygon
-     *                         and the color of the polygon (Defaults to the active color).
+     * @param vertices The vertices of the polygon, must contain at least 3 vertices, in sequence "x1, y1, x2, y2, ...".
      */
-    void polygon(float x1, float y1, float x2, float y2, float x3, float y3, Integer... verticesAndColor);
+    void polygon(float... vertices);
 
     /**
      * Draws a circle on the screen.

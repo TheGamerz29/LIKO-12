@@ -140,7 +140,7 @@ public class GdxFrameBuffer implements Disposable {
             colorsPalette[colorId * 4] = ((colorRGBA & 0xff000000) >>> 24) / 255f; //color.r
             colorsPalette[colorId * 4 + 1] = ((colorRGBA & 0x00ff0000) >>> 16) / 255f; //color.g
             colorsPalette[colorId * 4 + 2] = ((colorRGBA & 0x0000ff00) >>> 8) / 255f; //color.b
-            colorsPalette[colorId * 4 + 3] = ((colorRGBA & 0x000000ff)) / 255f; //color.a
+            colorsPalette[colorId * 4 + 3] = 1; //color.a
         }
 
         pixmap.dispose();

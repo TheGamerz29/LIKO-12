@@ -25,6 +25,10 @@ public class GdxOffsets {
     public final float filledRectangleWidth = 0.0f;
     public final float filledRectangleHeight = 0.0f;
 
+    //Polygon offsets
+    public final float polygonX = 0.0f;
+    public final float polygonY = 0.0f;
+
     //Circle offsets
     public final float circleX = 0.0f;
     public final float circleY = 0.0f;
