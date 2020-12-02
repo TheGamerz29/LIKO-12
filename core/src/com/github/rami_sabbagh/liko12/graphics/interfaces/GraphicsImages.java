@@ -14,5 +14,5 @@ public interface GraphicsImages {
      */
     ImageData newImageData(int width, int height);
 
-    //TODO: Add SpriteBatches.
+    //TODO: Add a method for importing an image.
 }

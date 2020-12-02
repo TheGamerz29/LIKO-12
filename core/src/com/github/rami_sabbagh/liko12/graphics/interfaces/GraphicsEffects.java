@@ -68,7 +68,7 @@ public interface GraphicsEffects {
     void resetPaletteColor(int color);
 
     /**
-     * Sets the color remapping when drawing images.
+     * Sets the color remapping for all drawing operations.
      *
      * @param from The color to replace.
      * @param to   The color which will replace 'from'.

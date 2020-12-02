@@ -89,7 +89,7 @@ public class GdxImageData implements ImageData {
         if (source == null) throw new NullPointerException("the source imageData is null.");
         if (!(source instanceof GdxImageData))
             throw new UnsupportedOperationException("Unsupported source image type.");
-        //TODO: Hard-copy the pixels when the instance is not a GdxImageData.
+        //NOTE: It's possible to hard-copy the pixels when the instance is not a GdxImageData.
 
         GdxImageData gdxSource = (GdxImageData) source;
 

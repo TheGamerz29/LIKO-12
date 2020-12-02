@@ -84,7 +84,31 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void setDrawingPattern(Image pattern) {
-        //TODO: Implement me.
+        batch.end();
+
+        if (pattern != null) { //Enable the stencil
+            Gdx.gl.glEnable(GL20.GL_STENCIL_TEST);
+
+            Gdx.gl.glStencilMask(0xFF);
+            Gdx.gl.glClearStencil(0);
+            Gdx.gl.glClear(GL20.GL_STENCIL_BUFFER_BIT);
+
+            Gdx.gl.glStencilFunc(GL20.GL_ALWAYS, 1, 0xFF);
+            Gdx.gl.glStencilOp(GL20.GL_KEEP, GL20.GL_KEEP, GL20.GL_REPLACE);
+
+            batch.setShader(gdxFrameBuffer.stencilShader);
+            batch.begin();
+            pattern.draw(0, 0, 0.0f, 1.0f, 1.0f, 0, 0, getWidth(), getHeight());
+            batch.end();
+            batch.setShader(gdxFrameBuffer.shader);
+
+            Gdx.gl.glStencilFunc(GL20.GL_EQUAL, 1, 0xFF);
+            Gdx.gl.glStencilOp(GL20.GL_KEEP, GL20.GL_KEEP, GL20.GL_KEEP);
+        } else { //Disable the stencil
+            Gdx.gl.glDisable(GL20.GL_STENCIL_TEST);
+        }
+
+        batch.begin();
     }
 
     @Override
@@ -371,6 +395,9 @@ public class GdxGraphics implements Graphics {
     @Override
     public void flip() {
         //TODO: Implement me.
+        //This can be so Lua specific, or can be implemented using Java threads.
+        //Pretending that the called is running from a separate thread, and so it would pause the thread.
+        //And once the screen is rendered, it would resume the thread.
     }
 
     /**

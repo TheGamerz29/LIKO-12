@@ -58,6 +58,10 @@ public class GdxFrameBuffer implements Disposable {
      */
     public final ShaderProgram shader;
     /**
+     * The ShaderProgram for the drawing pattern stencil.
+     */
+    public final ShaderProgram stencilShader;
+    /**
      * The display shader of LIKO-12.
      * Which remaps the pixels values from color ids into their actual values from the palette.
      */
@@ -79,7 +83,7 @@ public class GdxFrameBuffer implements Disposable {
      * @param height The height of the framebuffer in pixels.
      */
     public GdxFrameBuffer(int width, int height) {
-        frameBuffer = new FrameBuffer(RGB888, width, height, false);
+        frameBuffer = new FrameBuffer(RGB888, width, height, false, true);
         frameBuffer.getColorBufferTexture().setFilter(Nearest, Nearest); //Set the scaling filter.
 
         camera = new OrthographicCamera();
@@ -96,6 +100,9 @@ public class GdxFrameBuffer implements Disposable {
         if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
         updateTransformationMatrix();
         batch.setShader(shader);
+
+        stencilShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("stencilShader.glsl"));
+        if (!stencilShader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + stencilShader.getLog());
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
         drawer.setDefaultSnap(true);

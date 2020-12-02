@@ -26,6 +26,9 @@ public class LIKO12 extends ApplicationAdapter {
     ImageData testImageData;
     Image testImage;
 
+    ImageData patternImageData;
+    Image patternImage;
+
     Vector2 inputVec;
     float[] transformation = {
             1, 0, 1,
@@ -53,6 +56,15 @@ public class LIKO12 extends ApplicationAdapter {
             }
         });
         testImage = testImageData.toImage();
+
+        patternImageData = graphics.newImageData(4, 4);
+        patternImageData.mapPixels(new PixelFunction() {
+            @Override
+            public int apply(int x, int y, int color) {
+                return (x + y) % 2;
+            }
+        });
+        patternImage = patternImageData.toImage();
 
         inputVec = new Vector2();
         identityMatrix = new Matrix3();
@@ -108,7 +120,10 @@ public class LIKO12 extends ApplicationAdapter {
         //graphics.line(2, 2, 8, 2, 8);
 
         graphics.rectangle(2, 2, 5 * 16 + 2, 5 + 2, true, 0);
-        for (int i = 0; i < 16; i++) graphics.rectangle(3 + i * 5, 3, 5, 5, false, i);
+
+        graphics.setDrawingPattern(patternImage);
+        for (int i = 0; i < 16; i++) graphics.rectangle(3 + i * 5, 3, 5, 5, true, i);
+        graphics.setDrawingPattern(null);
 
         int scrollOffset = (int) (System.currentTimeMillis()/100 % 32);
         scrollOffset = Math.abs(16 - scrollOffset);
@@ -142,8 +157,12 @@ public class LIKO12 extends ApplicationAdapter {
     public void dispose() {
         gdxFrameBuffer.dispose();
         batch.dispose();
+
         testImageData.dispose();
         testImage.dispose();
+
+        patternImageData.dispose();
+        patternImage.dispose();
     }
 
     @Override
