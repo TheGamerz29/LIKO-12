@@ -92,7 +92,7 @@ public class GdxFrameBuffer implements Disposable {
 
         transformationMatrix = new Matrix3();
 
-        shader = new ShaderProgram(Gdx.files.internal("matrixShader.glsl"), Gdx.files.internal("fragmentShader.glsl"));
+        shader = new ShaderProgram(Gdx.files.internal("matrixShader.glsl"), Gdx.files.internal("mappingShader.glsl"));
         if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
         updateTransformationMatrix();
         batch.setShader(shader);
@@ -107,6 +107,14 @@ public class GdxFrameBuffer implements Disposable {
         if (!shader.isCompiled()) //TODO: Preprocessing for non-deterministic arrays.
             throw new IllegalArgumentException("Error compiling the display shader: " + shader.getLog());
         updateDisplayShaderPalette();
+
+        float[] remappingPalette = new float[16];
+        for (int colorId = 0; colorId < 16; colorId++) {
+            remappingPalette[colorId] = colorId / 15.0f;
+        }
+
+        shader.bind();
+        shader.setUniform1fv("u_remapping", remappingPalette, 0, 16);
     }
 
     /**

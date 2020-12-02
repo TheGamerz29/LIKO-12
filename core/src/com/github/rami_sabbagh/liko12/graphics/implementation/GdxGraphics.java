@@ -150,17 +150,36 @@ public class GdxGraphics implements Graphics {
 
     @Override
     public void remapColor(int from, int to) {
-        //TODO: Implement me.
+        //NOTE: Optimizations might be possible.
+        validateColor(from);
+        validateColor(to);
+
+        batch.end();
+        gdxFrameBuffer.shader.bind();
+        gdxFrameBuffer.shader.setUniformf("u_remapping[" + from + "]", to / 15.0f);
+        batch.begin();
     }
 
     @Override
     public void makeColorTransparent(int color) {
-        //TODO: Implement me.
+        //NOTE: Optimizations might be possible.
+        validateColor(color);
+
+        batch.end();
+        gdxFrameBuffer.shader.bind();
+        gdxFrameBuffer.shader.setUniformf("u_transparent[" + color + "]", 1.0f);
+        batch.begin();
     }
 
     @Override
     public void makeColorOpaque(int color) {
-        //TODO: Implement me.
+        //NOTE: Optimizations might be possible.
+        validateColor(color);
+
+        batch.end();
+        gdxFrameBuffer.shader.bind();
+        gdxFrameBuffer.shader.setUniformf("u_transparent[" + color + "]", 0.0f);
+        batch.begin();
     }
 
     @Override
