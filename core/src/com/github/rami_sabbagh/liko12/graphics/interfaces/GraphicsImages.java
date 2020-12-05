@@ -14,5 +14,11 @@ public interface GraphicsImages {
      */
     ImageData newImageData(int width, int height);
 
-    //TODO: Add a method for importing an image.
+    /**
+     * Creates an ImageData from an imported image.
+     *
+     * @param data The binary representation of the PNG image to import.
+     * @return The created ImageData object.
+     */
+    ImageData importImageData(byte[] data);
 }

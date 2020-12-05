@@ -30,6 +30,7 @@ public class GdxGraphics implements Graphics {
     private final PolygonSpriteBatch batch;
     private final Matrix3 transformationMatrix;
     private final Color[] defaultColorsPalette;
+    private final int[] colorsIntBits;
     private final GdxOffsets offsets;
 
     /**
@@ -58,9 +59,12 @@ public class GdxGraphics implements Graphics {
         for (int colorId = 0; colorId < MAX_COLORS; colorId++)
             colors[colorId] = new Color(colorId / (MAX_COLORS - 1.0f), 0, 0, 1);
 
+        colorsIntBits = new int[MAX_COLORS];
         defaultColorsPalette = new Color[MAX_COLORS];
-        for (int colorId = 0; colorId < MAX_COLORS; colorId++)
+        for (int colorId = 0; colorId < MAX_COLORS; colorId++) {
             defaultColorsPalette[colorId] = this.gdxFrameBuffer.getColor(colorId);
+            colorsIntBits[colorId] = defaultColorsPalette[colorId].toIntBits();
+        }
     }
 
     private static void validateColor(int color) {
@@ -157,6 +161,7 @@ public class GdxGraphics implements Graphics {
         if (b < 0 || b >= 256) throw new InvalidPaletteColorException(b);
 
         reusableColor.set((r << 24) | (g << 16) | (b << 8) | 0xFF);
+        colorsIntBits[color] = reusableColor.toIntBits();
         gdxFrameBuffer.setColor(color, reusableColor);
     }
 
@@ -209,6 +214,32 @@ public class GdxGraphics implements Graphics {
     @Override
     public ImageData newImageData(int width, int height) {
         return new GdxImageData(this.gdxFrameBuffer, width, height);
+    }
+
+    @Override
+    public ImageData importImageData(byte[] data) {
+        Pixmap pixmap = new Pixmap(data, 0, data.length);
+        Pixmap imported = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), RGB888);
+        ByteBuffer importedBuffer = imported.getPixels();
+
+        for (int y = 0; y < pixmap.getHeight(); y++) {
+            for (int x = 0; x < pixmap.getWidth(); x++) {
+                int pixelIntBits = reusableColor.set(pixmap.getPixel(x, y)).toIntBits();
+
+                int matchedColorId = 0;
+                for (int colorId = 0; colorId < MAX_COLORS; colorId++) {
+                    if (colorsIntBits[colorId] == pixelIntBits) {
+                        matchedColorId = colorId;
+                        break;
+                    }
+                }
+
+                importedBuffer.put((x + y * pixmap.getWidth()) * 3, (byte) (matchedColorId / 15.0f * 255.0f));
+            }
+        }
+
+        pixmap.dispose();
+        return new GdxImageData(this.gdxFrameBuffer, imported);
     }
 
     @Override
