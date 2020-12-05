@@ -235,8 +235,6 @@ public class GdxFrameBuffer implements Disposable {
         batch.begin();
     }
 
-    //TODO: Maybe add an update method, check the ShapeDrawer wiki.
-
     /**
      * Unbinds the LIKO-12's framebuffer and drawing operations won't be allowed afterwards.
      */

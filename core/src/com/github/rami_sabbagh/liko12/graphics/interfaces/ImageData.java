@@ -69,7 +69,7 @@ public interface ImageData extends Disposable {
     /**
      * Encodes the imageData into a PNG image, using the current active colorPalette.
      *
-     * @return The encoded PNG binary data as a String.
+     * @return The encoded PNG binary data as a bytes array.
      */
-    String export();
+    byte[] export();
 }
