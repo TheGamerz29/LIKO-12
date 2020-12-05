@@ -56,7 +56,7 @@ public class GdxFrameBuffer implements Disposable {
     /**
      * The ShaderProgram of LIKO-12.
      */
-    public final ShaderProgram shader;
+    public final ShaderProgram effectsShader;
     /**
      * The ShaderProgram for the drawing pattern stencil.
      */
@@ -96,13 +96,13 @@ public class GdxFrameBuffer implements Disposable {
 
         transformationMatrix = new Matrix3();
 
-        shader = new ShaderProgram(Gdx.files.internal("matrixShader.glsl"), Gdx.files.internal("mappingShader.glsl"));
-        if (!shader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+        effectsShader = newEffectsShader();
         updateTransformationMatrix();
-        batch.setShader(shader);
+        batch.setShader(effectsShader);
 
-        stencilShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("stencilShader.glsl"));
-        if (!stencilShader.isCompiled()) throw new IllegalArgumentException("Error compiling shader: " + stencilShader.getLog());
+        stencilShader = new ShaderProgram(Gdx.files.internal("vertex-shaders/default-shader.glsl"), Gdx.files.internal("fragment-shaders/stencil-shader.glsl"));
+        if (!stencilShader.isCompiled())
+            throw new IllegalArgumentException("Error compiling shader: " + stencilShader.getLog());
 
         drawer = new ShapeDrawer(batch, new TextureRegion(drawerTexture));
         drawer.setDefaultSnap(true);
@@ -110,9 +110,7 @@ public class GdxFrameBuffer implements Disposable {
         offsets = new GdxOffsets(); //TODO: Automatic offsets detection.
 
         colorsPalette = loadColorsPaletteFromImage(Gdx.files.internal("palette.png"));
-        displayShader = new ShaderProgram(Gdx.files.internal("vertexShader.glsl"), Gdx.files.internal("displayShader.glsl"));
-        if (!shader.isCompiled()) //TODO: Preprocessing for non-deterministic arrays.
-            throw new IllegalArgumentException("Error compiling the display shader: " + shader.getLog());
+        displayShader = newDisplayShader();
         updateDisplayShaderPalette();
 
         float[] remappingPalette = new float[16];
@@ -120,8 +118,8 @@ public class GdxFrameBuffer implements Disposable {
             remappingPalette[colorId] = colorId / 15.0f;
         }
 
-        shader.bind();
-        shader.setUniform1fv("u_remapping", remappingPalette, 0, 16);
+        effectsShader.bind();
+        effectsShader.setUniform1fv("u_remapping", remappingPalette, 0, 16);
     }
 
     /**
@@ -160,6 +158,34 @@ public class GdxFrameBuffer implements Disposable {
 
         pixmap.dispose();
         return colorsPalette;
+    }
+
+    private static ShaderProgram newEffectsShader() {
+        ShaderProgram effectsShader = new ShaderProgram(Gdx.files.internal("vertex-shaders/matrix-shader.glsl"), Gdx.files.internal("fragment-shaders/effects-shader.glsl"));
+        if (!effectsShader.isCompiled()) {
+            Gdx.app.error("GLSL", "Failed to compile fragment-shaders/effects-shader.glsl: " + effectsShader.getLog());
+            effectsShader.dispose();
+
+            effectsShader = new ShaderProgram(Gdx.files.internal("vertex-shaders/matrix-shader.glsl"), Gdx.files.internal("fragment-shaders/effects-fallback-shader.glsl"));
+            if (!effectsShader.isCompiled())
+                throw new IllegalArgumentException("Error compiling shader: " + effectsShader.getLog());
+        }
+
+        return effectsShader;
+    }
+
+    private static ShaderProgram newDisplayShader() {
+        ShaderProgram displayShader = new ShaderProgram(Gdx.files.internal("vertex-shaders/default-shader.glsl"), Gdx.files.internal("fragment-shaders/display-shader.glsl"));
+        if (!displayShader.isCompiled()) {
+            Gdx.app.error("GLSL", "Failed to compile fragment-shaders/display-shader.glsl: " + displayShader.getLog());
+            displayShader.dispose();
+
+            displayShader = new ShaderProgram(Gdx.files.internal("vertex-shaders/default-shader.glsl"), Gdx.files.internal("fragment-shaders/display-fallback-shader.glsl"));
+            if (!displayShader.isCompiled())
+                throw new IllegalArgumentException("Error compiling shader: " + displayShader.getLog());
+        }
+
+        return displayShader;
     }
 
     /**
@@ -209,6 +235,8 @@ public class GdxFrameBuffer implements Disposable {
         batch.begin();
     }
 
+    //TODO: Maybe add an update method, check the ShapeDrawer wiki.
+
     /**
      * Unbinds the LIKO-12's framebuffer and drawing operations won't be allowed afterwards.
      */
@@ -224,14 +252,12 @@ public class GdxFrameBuffer implements Disposable {
         if (colorsPaletteModified) updateDisplayShaderPalette();
     }
 
-    //TODO: Maybe add an update method, check the ShapeDrawer wiki.
-
     @Override
     public void dispose() {
         frameBuffer.dispose();
         drawerTexture.dispose();
         batch.dispose();
-        shader.dispose();
+        effectsShader.dispose();
         displayShader.dispose();
     }
 
@@ -242,7 +268,7 @@ public class GdxFrameBuffer implements Disposable {
     }
 
     public void updateTransformationMatrix() {
-        shader.bind();
-        shader.setUniformMatrix("u_transMatrix", transformationMatrix);
+        effectsShader.bind();
+        effectsShader.setUniformMatrix("u_transMatrix", transformationMatrix);
     }
 }

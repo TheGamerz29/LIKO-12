@@ -100,7 +100,7 @@ public class GdxGraphics implements Graphics {
             batch.begin();
             pattern.draw(0, 0, 0.0f, 1.0f, 1.0f, 0, 0, getWidth(), getHeight());
             batch.end();
-            batch.setShader(gdxFrameBuffer.shader);
+            batch.setShader(gdxFrameBuffer.effectsShader);
 
             Gdx.gl.glStencilFunc(GL20.GL_EQUAL, 1, 0xFF);
             Gdx.gl.glStencilOp(GL20.GL_KEEP, GL20.GL_KEEP, GL20.GL_KEEP);
@@ -179,8 +179,8 @@ public class GdxGraphics implements Graphics {
         validateColor(to);
 
         batch.end();
-        gdxFrameBuffer.shader.bind();
-        gdxFrameBuffer.shader.setUniformf("u_remapping[" + from + "]", to / 15.0f);
+        gdxFrameBuffer.effectsShader.bind();
+        gdxFrameBuffer.effectsShader.setUniformf("u_remapping[" + from + "]", to / 15.0f);
         batch.begin();
     }
 
@@ -190,8 +190,8 @@ public class GdxGraphics implements Graphics {
         validateColor(color);
 
         batch.end();
-        gdxFrameBuffer.shader.bind();
-        gdxFrameBuffer.shader.setUniformf("u_transparent[" + color + "]", 1.0f);
+        gdxFrameBuffer.effectsShader.bind();
+        gdxFrameBuffer.effectsShader.setUniformf("u_transparent[" + color + "]", 1.0f);
         batch.begin();
     }
 
@@ -201,8 +201,8 @@ public class GdxGraphics implements Graphics {
         validateColor(color);
 
         batch.end();
-        gdxFrameBuffer.shader.bind();
-        gdxFrameBuffer.shader.setUniformf("u_transparent[" + color + "]", 0.0f);
+        gdxFrameBuffer.effectsShader.bind();
+        gdxFrameBuffer.effectsShader.setUniformf("u_transparent[" + color + "]", 0.0f);
         batch.begin();
     }
 

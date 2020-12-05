@@ -75,6 +75,8 @@ public class LIKO12 extends ApplicationAdapter {
     void renderBuffer() {
         gdxFrameBuffer.begin();
 
+        graphics.makeColorTransparent(0);
+
         inputVec.set(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY() - 1);
         viewport.unproject(inputVec);
         inputVec.x = (float) Math.floor(inputVec.x);
