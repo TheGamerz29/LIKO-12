@@ -256,6 +256,7 @@ public class GdxFrameBuffer implements Disposable {
         drawerTexture.dispose();
         batch.dispose();
         effectsShader.dispose();
+        stencilShader.dispose();
         displayShader.dispose();
     }
 
